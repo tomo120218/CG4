@@ -14,4 +14,21 @@ class GameScene {
 
 		// 描画
 	    void Draw();
+
+		// デストラクタ
+	    ~GameScene();
+
+		
+private:
+
+	// カメラ
+	KamataEngine::Camera camera_;
+
+	// テキスチャハンドル
+	uint32_t textureHandle_ = 0;
+
+	//
+	Model* model_ = nullptr;
+
+	WorldTransform worldTransform_;
 };
