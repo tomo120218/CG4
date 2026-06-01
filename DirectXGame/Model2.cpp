@@ -1,19 +1,19 @@
-//#include <3d\Model.h>
+// #include <3d\Model.h>
+#include "Model2.h"
 #include <3d\Camera.h>
-#include <base\DirectXCommon.h>
 #include <3d\Material.h>
-#include <math\MathUtility.h>
-#include <base\StringUtility.h>
-#include <base\TextureManager.h>
 #include <3d\WorldTransform.h>
 #include <algorithm>
+#include <base\DirectXCommon.h>
+#include <base\StringUtility.h>
+#include <base\TextureManager.h>
 #include <cassert>
 #include <d3dcompiler.h>
 #include <format>
 #include <fstream>
+#include <math\MathUtility.h>
 #include <numbers>
 #include <sstream>
-#include "Model2.h"
 
 #pragma comment(lib, "d3dcompiler.lib")
 
@@ -124,6 +124,58 @@ Model2* Model2::CreateSphere(uint32_t divisionVertial, uint32_t divisionHorizont
 			indices[startIndex + 4] = startIndexVertices + 1;
 			indices[startIndex + 5] = startIndexVertices + 3;
 		}
+	}
+
+	instance->InitializeFromVertices(vertices, indices);
+
+	return instance;
+}
+
+// 四角形モデルの生成
+Model2* Model2::CreateSquare(int max) {
+	// メモリ確保
+	Model2* instance = new Model2;
+	std::vector<Mesh::VertexPosNormalUv> vertices;
+	std::vector<uint32_t> indices;
+
+	// 頂点数
+	const uint32_t kNumVertices = 4 * max;
+	// インデックス数
+	const uint32_t kNumIndices = 6 * max;
+
+	vertices.resize(kNumVertices);
+	indices.resize(kNumIndices);
+
+	for (int i = 0; i < max; i++) {
+		int index = i * 4;
+		// 左下
+		vertices[index + 0].pos = {i * 2 + -10.0f, -10.0f, 0.0f};
+		vertices[index + 0].uv = {0, 1};
+		vertices[index + 0].normal = {0, 0, 1};
+		// 左上
+		vertices[index + 1].pos = {i * 2 + -10.0f, 10.0f, 0.0f};
+		vertices[index + 1].uv = {0, 0};
+		vertices[index + 1].normal = {0, 0, 1};
+		// 右下
+		vertices[index + 2].pos = {i * 2 + 10.0f, -10.0f, 0.0f};
+		vertices[index + 2].uv = {1, 1};
+		vertices[index + 2].normal = {0, 0, 1};
+		// 右上
+		vertices[index + 3].pos = {i * 2 + 10.0f, 10.0f, 0.0f};
+		vertices[index + 3].uv = {1, 0};
+		vertices[index + 3].normal = {0, 0, 1};
+	}
+
+	// インデックス
+	for (int i = 0; i < max; i++) {
+		int index = i * 6;
+		int vertex = i * 4;
+		indices[index + 0] = vertex + 0;
+		indices[index + 1] = vertex + 1;
+		indices[index + 2] = vertex + 2;
+		indices[index + 3] = vertex + 1;
+		indices[index + 4] = vertex + 3;
+		indices[index + 5] = vertex + 2;
 	}
 
 	instance->InitializeFromVertices(vertices, indices);
@@ -748,22 +800,19 @@ void ModelCommon2::InitializeGraphicsPipeline() {
 	blenddesc.DestBlend = D3D12_BLEND_INV_SRC_ALPHA;
 
 	// 加算合成
-	//blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
-	//blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	//blenddesc.DestBlend = D3D12_BLEND_ONE;
+	// blenddesc.BlendOp = D3D12_BLEND_OP_ADD;
+	// blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	// blenddesc.DestBlend = D3D12_BLEND_ONE;
 
-	//減算合成
-	//blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
-	//blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
-	//blenddesc.DestBlend = D3D12_BLEND_ONE
+	// 減算合成
+	// blenddesc.BlendOp = D3D12_BLEND_OP_REV_SUBTRACT;
+	// blenddesc.SrcBlend = D3D12_BLEND_SRC_ALPHA;
+	// blenddesc.DestBlend = D3D12_BLEND_ONE
 
 	// 共通設定
 	blenddesc.BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	blenddesc.SrcBlendAlpha = D3D12_BLEND_ONE;
 	blenddesc.DestBlendAlpha = D3D12_BLEND_ZERO;
-
-
-
 
 	// ブレンドステートの設定
 	gpipeline.BlendState.RenderTarget[0] = blenddesc;
@@ -815,58 +864,5 @@ void ModelCommon2::InitializeGraphicsPipeline() {
 	result = DirectXCommon::GetInstance()->GetDevice()->CreateGraphicsPipelineState(&gpipeline, IID_PPV_ARGS(&pipelineState_));
 	assert(SUCCEEDED(result));
 }
-
-// 四角形モデルの生成
-Model2* Model2::CreateSquare(int max) {
-	// メモリ確保
-	Model2* instance = new Model2;
-	std::vector<Mesh::VertexPosNormalUv> vertices;
-	std::vector<uint32_t> indices;
-
-	// 頂点数
-	const uint32_t kNumVertices = 4 * max;
-	// インデックス数
-	const uint32_t kNumIndices = 6 * max;
-
-	vertices.resize(kNumVertices);
-	indices.resize(kNumIndices);
-
-	for (int i = 0; i < max; i++) {
-		int index = i * 4;
-		// 左下
-		vertices[index + 0].pos = {i * 2 + -1.0f, -1.0f, 0.0f};
-		vertices[index + 0].uv = {0, 1};
-		vertices[index + 0].normal = {0, 0, 1};
-		// 左上
-		vertices[index + 1].pos = {i * 2 + -2.0f, 1.0f, 0.0f};
-		vertices[index + 1].uv = {0, 0};
-		vertices[index + 1].normal = {0, 0, 1};
-		// 右下
-		vertices[index + 2].pos = {i * 2 + 1.0f, -1.0f, 0.0f};
-		vertices[index + 2].uv = {1, 1};
-		vertices[index + 2].normal = {0, 0, 1};
-		// 右上
-		vertices[index + 3].pos = {i * 2 + 2.0f, 1.0f, 0.0f};
-		vertices[index + 3].uv = {1, 0};
-		vertices[index + 3].normal = {0, 0, 1};
-	}
-
-	// インデックス
-	for (int i = 0; i < max; i++) {
-		int index = i * 6;
-		int vertex = i * 4;
-		indices[index + 0] = vertex + 0;
-		indices[index + 1] = vertex + 1;
-		indices[index + 2] = vertex + 2;
-		indices[index + 3] = vertex + 1;
-		indices[index + 4] = vertex + 3;
-		indices[index + 5] = vertex + 2;
-	}
-
-	instance->InitializeFromVertices(vertices, indices);
-
-	return instance;
-}
-
 
 } // namespace KamataEngine

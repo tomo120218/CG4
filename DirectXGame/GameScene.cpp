@@ -1,27 +1,33 @@
 #include "GameScene.h"
+
 using namespace KamataEngine;
 
-// デストラクタ
-GameScene::~GameScene();
+GameScene::~GameScene() { Model2::StaticFinalize(); }
 
-void GameScene::Initialize() { 
+void GameScene::Initialize() {
+	Model2::StaticInitialize();
 
-
+	model_ = Model2::CreateSquare(1); // ←四角形
+	worldTransform_.Initialize();
 	camera_.Initialize();
 
-	// ファイル名を指定してテキスチャを読み込む
 	textureHandle_ = TextureManager::Load("uvChecker.png");
-
-	// ワールド
-	worldTransform_.Initialize();
 }
 
 void GameScene::Update() {
-
-
+	worldTransform_.TransferMatrix();
+	camera_.TransferMatrix();
 }
 
 void GameScene::Draw() {
+	ID3D12GraphicsCommandList* cmdList = DirectXCommon::GetInstance()->GetCommandList();
 
+	// 描画開始
+	Model2::PreDraw(cmdList);
 
+	// モデル描画
+	model_->Draw(worldTransform_, camera_, textureHandle_);
+
+	// 描画終了
+	Model2::PostDraw();
 }
