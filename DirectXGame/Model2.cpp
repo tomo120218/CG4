@@ -188,6 +188,74 @@ Model2* Model2::CreateSquare(int max) {
 	return instance;
 }
 
+Model2* Model2::CreateRing(int max) {
+	Model2* instance = new Model2;
+
+	std::vector<Mesh::VertexPosNormalUv> vertices;
+	std::vector<uint32_t> indices;
+
+	const float kOuterRadius = 20.0f;
+	const float kInnerRadius = 10.0f;
+
+	const float radianPerDivide = 2.0f * std::numbers::pi_v<float> / float(max);
+
+	// 1つの四角形につき頂点4つ
+	vertices.resize(4 * max);
+
+	// 1つの四角形につき三角形2つ = index6個
+	indices.resize(6 * max);
+
+	for (int i = 0; i < max; i++) {
+		int vertexIndex = i * 4;
+
+		float sin = std::sin(i * radianPerDivide);
+		float cos = std::cos(i * radianPerDivide);
+
+		float sinNext = std::sin((i + 1) * radianPerDivide);
+		float cosNext = std::cos((i + 1) * radianPerDivide);
+
+		float u = float(i) / float(max);
+		float uNext = float(i + 1) / float(max);
+
+		// 外側 現在
+		vertices[vertexIndex + 0].pos = {-sin * kOuterRadius, cos * kOuterRadius, 0.0f};
+		vertices[vertexIndex + 0].uv = {u, 0.0f};
+		vertices[vertexIndex + 0].normal = {0.0f, 0.0f, 1.0f};
+
+		// 外側 次
+		vertices[vertexIndex + 1].pos = {-sinNext * kOuterRadius, cosNext * kOuterRadius, 0.0f};
+		vertices[vertexIndex + 1].uv = {uNext, 0.0f};
+		vertices[vertexIndex + 1].normal = {0.0f, 0.0f, 1.0f};
+
+		// 内側 現在
+		vertices[vertexIndex + 2].pos = {-sin * kInnerRadius, cos * kInnerRadius, 0.0f};
+		vertices[vertexIndex + 2].uv = {u, 1.0f};
+		vertices[vertexIndex + 2].normal = {0.0f, 0.0f, 1.0f};
+
+		// 内側 次
+		vertices[vertexIndex + 3].pos = {-sinNext * kInnerRadius, cosNext * kInnerRadius, 0.0f};
+		vertices[vertexIndex + 3].uv = {uNext, 1.0f};
+		vertices[vertexIndex + 3].normal = {0.0f, 0.0f, 1.0f};
+	}
+
+	for (int i = 0; i < max; i++) {
+		int index = i * 6;
+		int vertex = i * 4;
+
+		indices[index + 0] = vertex + 0;
+		indices[index + 1] = vertex + 2;
+		indices[index + 2] = vertex + 1;
+
+		indices[index + 3] = vertex + 1;
+		indices[index + 4] = vertex + 2;
+		indices[index + 5] = vertex + 3;
+	}
+
+	instance->InitializeFromVertices(vertices, indices);
+
+	return instance;
+}
+
 void Model2::PreDraw(ID3D12GraphicsCommandList* commandList) { ModelCommon2::GetInstance()->PreDraw(commandList); }
 
 void Model2::PostDraw() { ModelCommon2::GetInstance()->PostDraw(); }

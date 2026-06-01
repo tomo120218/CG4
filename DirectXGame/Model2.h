@@ -143,6 +143,8 @@ public: // 静的メンバ関数
 	/// <returns></returns>
 	static Model2* CreateSquare(int max);
 
+	static Model2* CreateRing(int max);
+
 	/// <summary>
 	/// 描画前処理
 	/// </summary>
