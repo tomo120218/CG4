@@ -1,12 +1,16 @@
 #pragma once
-#include "KamataEngine.h"
-#include "Model2.h"
 
-// ゲームシーン
+#include "Effect.h"
+#include "KamataEngine.h"
+
+#include <list>
+
+using namespace KamataEngine;
+using namespace MathUtility;
+
 class GameScene {
 public:
-	// デストラクタ
-	/*GameScene();*/
+	GameScene() = default;
 	~GameScene();
 
 	// 初期化
@@ -18,10 +22,16 @@ public:
 	// 描画
 	void Draw();
 
-private:
-	KamataEngine::Model2* model_ = nullptr;
-	KamataEngine::WorldTransform worldTransform_;
-	KamataEngine::Camera camera_;
+	// エフェクト生成
+	void EffectBorn(Vector3 position);
 
-	uint32_t textureHandle_ = 0;
+private:
+	// カメラ
+	Camera camera_;
+
+	// モデル
+	Model* modelEffect_ = nullptr;
+
+	// エフェクト一覧
+	std::list<Effect*> effects_;
 };
