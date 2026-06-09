@@ -282,23 +282,40 @@ Effect* Effect::CreateRhombus(int max) {
 		float width = 10.0f;
 		float height = 10.0f;
 
+		// 細さ
+		float thin = height * 0.05f;
+
+		// 角度 45度
+		float angle = -0.785398f;
+		float c = std::cos(angle);
+		float s = std::sin(angle);
+
+		// ローカル座標を回転させる関数
+		auto Rotate = [&](float x, float y) {
+			Vector3 result;
+			result.x = offsetX + x * c - y * s;
+			result.y = x * s + y * c;
+			result.z = 0.0f;
+			return result;
+		};
+
 		// 上
-		vertices[vertexIndex + 0].pos = {offsetX + 0.0f, height, 0.0f};
+		vertices[vertexIndex + 0].pos = Rotate(0.0f, thin);
 		vertices[vertexIndex + 0].normal = {0.0f, 0.0f, 1.0f};
 		vertices[vertexIndex + 0].uv = {0.5f, 0.0f};
 
 		// 左
-		vertices[vertexIndex + 1].pos = {offsetX - width, 0.0f, 0.0f};
+		vertices[vertexIndex + 1].pos = Rotate(-width, 0.0f);
 		vertices[vertexIndex + 1].normal = {0.0f, 0.0f, 1.0f};
 		vertices[vertexIndex + 1].uv = {0.0f, 0.5f};
 
 		// 下
-		vertices[vertexIndex + 2].pos = {offsetX + 0.0f, -height, 0.0f};
+		vertices[vertexIndex + 2].pos = Rotate(0.0f, -thin);
 		vertices[vertexIndex + 2].normal = {0.0f, 0.0f, 1.0f};
 		vertices[vertexIndex + 2].uv = {0.5f, 1.0f};
 
 		// 右
-		vertices[vertexIndex + 3].pos = {offsetX + width, 0.0f, 0.0f};
+		vertices[vertexIndex + 3].pos = Rotate(width, 0.0f);
 		vertices[vertexIndex + 3].normal = {0.0f, 0.0f, 1.0f};
 		vertices[vertexIndex + 3].uv = {1.0f, 0.5f};
 

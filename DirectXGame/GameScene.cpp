@@ -11,6 +11,7 @@ void GameScene::Initialize() {
 	/*effect_ = Effect::CreateRing(8);*/
 	effect_ = Effect::CreateRhombus(1); // 菱形
 	worldTransform_.Initialize();
+
 	camera_.Initialize();
 
 	textureHandle_ = TextureManager::Load("uvChecker.png");
