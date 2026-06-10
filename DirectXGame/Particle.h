@@ -86,7 +86,7 @@ private:
 /// <summary>
 /// モデルデータ
 /// </summary>
-class Effect {
+class Particle {
 public: // 列挙子
 	/// <summary>
 	/// ルートパラメータ番号
@@ -119,7 +119,7 @@ public: // 静的メンバ関数
 	/// 3Dモデル生成
 	/// </summary>
 	/// <returns></returns>
-	static Effect* Create();
+	static Particle* Create();
 
 	/// <summary>
 	/// OBJファイルからメッシュ生成
@@ -127,7 +127,7 @@ public: // 静的メンバ関数
 	/// <param name="modelname">モデル名</param>
 	/// <param name="modelname">エッジ平滑化フラグ</param>
 	/// <returns>生成されたモデル</returns>
-	static Effect* CreateFromOBJ(const std::string& modelname, bool smoothing = false);
+	static Particle* CreateFromOBJ(const std::string& modelname, bool smoothing = false);
 
 	/// <summary>
 	/// 球モデル生成
@@ -135,17 +135,17 @@ public: // 静的メンバ関数
 	/// <param name="divisionVertial">垂直方向（緯度）分割数</param>
 	/// <param name="divisionHorizontal">水平方向（経度）分割数</param>
 	/// <returns>生成されたモデル</returns>
-	static Effect* CreateSphere(uint32_t divisionVertial = 10, uint32_t divisionHorizontal = 10);
+	static Particle* CreateSphere(uint32_t divisionVertial = 10, uint32_t divisionHorizontal = 10);
 
 	/// <summary>
 	/// 板モデル生成
 	/// </summary>
 	/// <returns></returns>
-	static Effect* CreateSquare(int max);
+	static Particle* CreateSquare(int max);
 
-	static Effect* CreateRing(int max);
+	static Particle* CreateRing(int max);
 
-	static Effect* CreateRhombus(int max);
+	static Particle* CreateRhombus(int max);
 
 	/// <summary>
 	/// 描画前処理
@@ -159,7 +159,7 @@ public: // 静的メンバ関数
 	static void PostDraw();
 
 public: // メンバ関数
-	~Effect() = default;
+	~Particle() = default;
 
 	/// <summary>
 	/// 描画

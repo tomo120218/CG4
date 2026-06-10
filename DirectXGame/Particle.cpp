@@ -1,4 +1,4 @@
-#include "Effect.h"
+#include "Particle.h"
 // #include <3d\Model.h>
 #include <3d\Camera.h>
 #include <3d\Material.h>
@@ -25,33 +25,33 @@ namespace KamataEngine {
 /// <summary>
 /// 静的メンバ変数の実体
 /// </summary>
-const char* Effect::kBaseDirectory = "Resources/";
-const char* Effect::kDefaultModelName = "cube";
+const char* Particle::kBaseDirectory = "Resources/";
+const char* Particle::kDefaultModelName = "cube";
 ModelCommon2* ModelCommon2::sInstance_ = nullptr;
 
-void Effect::StaticInitialize() { ModelCommon2::GetInstance()->Initialize(); }
+void Particle::StaticInitialize() { ModelCommon2::GetInstance()->Initialize(); }
 
-void Effect::StaticFinalize() { ModelCommon2::GetInstance()->Terminate(); }
+void Particle::StaticFinalize() { ModelCommon2::GetInstance()->Terminate(); }
 
-Effect* Effect::Create() {
+Particle* Particle::Create() {
 	// メモリ確保
-	Effect* instance = new Effect;
+	Particle* instance = new Particle;
 	instance->InitializeFromFile(kDefaultModelName, false);
 
 	return instance;
 }
 
-Effect* Effect::CreateFromOBJ(const std::string& modelname, bool smoothing) {
+Particle* Particle::CreateFromOBJ(const std::string& modelname, bool smoothing) {
 	// メモリ確保
-	Effect* instance = new Effect;
+	Particle* instance = new Particle;
 	instance->InitializeFromFile(modelname, smoothing);
 
 	return instance;
 }
 
-Effect* Effect::CreateSphere(uint32_t divisionVertial, uint32_t divisionHorizontal) {
+Particle* Particle::CreateSphere(uint32_t divisionVertial, uint32_t divisionHorizontal) {
 	// メモリ確保
-	Effect* instance = new Effect;
+	Particle* instance = new Particle;
 	std::vector<Mesh::VertexPosNormalUv> vertices;
 	std::vector<uint32_t> indices;
 
@@ -132,9 +132,9 @@ Effect* Effect::CreateSphere(uint32_t divisionVertial, uint32_t divisionHorizont
 }
 
 // 四角形モデルの生成
-Effect* Effect::CreateSquare(int max) {
+Particle* Particle::CreateSquare(int max) {
 	// メモリ確保
-	Effect* instance = new Effect;
+	Particle* instance = new Particle;
 	std::vector<Mesh::VertexPosNormalUv> vertices;
 	std::vector<uint32_t> indices;
 
@@ -188,8 +188,8 @@ Effect* Effect::CreateSquare(int max) {
 	return instance;
 }
 
-Effect* Effect::CreateRing(int max) {
-	Effect* instance = new Effect;
+Particle* Particle::CreateRing(int max) {
+	Particle* instance = new Particle;
 
 	std::vector<Mesh::VertexPosNormalUv> vertices;
 	std::vector<uint32_t> indices;
@@ -256,9 +256,9 @@ Effect* Effect::CreateRing(int max) {
 	return instance;
 }
 
-Effect* Effect::CreateRhombus(int max) {
+Particle* Particle::CreateRhombus(int max) {
 	// メモリ確保
-	Effect* instance = new Effect;
+	Particle* instance = new Particle;
 
 	std::vector<Mesh::VertexPosNormalUv> vertices;
 	std::vector<uint32_t> indices;
@@ -337,11 +337,11 @@ Effect* Effect::CreateRhombus(int max) {
 	return instance;
 }
 
-void Effect::PreDraw(ID3D12GraphicsCommandList* commandList) { ModelCommon2::GetInstance()->PreDraw(commandList); }
+void Particle::PreDraw(ID3D12GraphicsCommandList* commandList) { ModelCommon2::GetInstance()->PreDraw(commandList); }
 
-void Effect::PostDraw() { ModelCommon2::GetInstance()->PostDraw(); }
+void Particle::PostDraw() { ModelCommon2::GetInstance()->PostDraw(); }
 
-void Effect::InitializeFromFile(const std::string& modelname, bool smoothing) {
+void Particle::InitializeFromFile(const std::string& modelname, bool smoothing) {
 	// モデル読み込み
 	LoadModel(modelname, smoothing);
 
@@ -374,7 +374,7 @@ void Effect::InitializeFromFile(const std::string& modelname, bool smoothing) {
 	LoadTextures();
 }
 
-void Effect::InitializeFromVertices(const std::vector<Mesh::VertexPosNormalUv>& vertices, const std::vector<uint32_t>& indices) {
+void Particle::InitializeFromVertices(const std::vector<Mesh::VertexPosNormalUv>& vertices, const std::vector<uint32_t>& indices) {
 
 	// メッシュ生成
 	meshes_.emplace_back(std::make_unique<Mesh>());
@@ -404,7 +404,7 @@ void Effect::InitializeFromVertices(const std::vector<Mesh::VertexPosNormalUv>& 
 	LoadTextures();
 }
 
-void Effect::LoadModel(const std::string& modelname, bool smoothing) {
+void Particle::LoadModel(const std::string& modelname, bool smoothing) {
 	const string modelFileName = modelname + ".obj";
 	const string directoryPath = kBaseDirectory + modelname + "/";
 
@@ -609,7 +609,7 @@ void Effect::LoadModel(const std::string& modelname, bool smoothing) {
 	}
 }
 
-void Effect::LoadMaterial(const std::string& directoryPath, const std::string& filename) {
+void Particle::LoadMaterial(const std::string& directoryPath, const std::string& filename) {
 	// ファイルストリーム
 	std::ifstream file;
 	// マテリアルファイルを開く
@@ -726,12 +726,12 @@ void Effect::LoadMaterial(const std::string& directoryPath, const std::string& f
 	}
 }
 
-void Effect::AddMaterial(std::unique_ptr<Material>& material) {
+void Particle::AddMaterial(std::unique_ptr<Material>& material) {
 	// コンテナに登録
 	materials_.emplace(material->name, std::move(material));
 }
 
-void Effect::LoadTextures() {
+void Particle::LoadTextures() {
 	int textureIndex = 0;
 	string directoryPath = name_ + "/";
 
@@ -753,7 +753,7 @@ void Effect::LoadTextures() {
 	}
 }
 
-void Effect::Draw(const WorldTransform& worldTransform, const Camera& camera, const ObjectColor* objectColor) {
+void Particle::Draw(const WorldTransform& worldTransform, const Camera& camera, const ObjectColor* objectColor) {
 
 	ModelCommon2* common = ModelCommon2::GetInstance();
 
@@ -776,7 +776,7 @@ void Effect::Draw(const WorldTransform& worldTransform, const Camera& camera, co
 	}
 }
 
-void Effect::Draw(const WorldTransform& worldTransform, const Camera& camera, uint32_t textureHadle, const ObjectColor* objectColor) {
+void Particle::Draw(const WorldTransform& worldTransform, const Camera& camera, uint32_t textureHadle, const ObjectColor* objectColor) {
 
 	ModelCommon2* common = ModelCommon2::GetInstance();
 
@@ -799,7 +799,7 @@ void Effect::Draw(const WorldTransform& worldTransform, const Camera& camera, ui
 	}
 }
 
-void Effect::SetAlpha(float alpha) {
+void Particle::SetAlpha(float alpha) {
 
 	for (auto& pair : materials_) {
 		std::unique_ptr<Material>& material = pair.second;
@@ -840,18 +840,18 @@ void ModelCommon2::Initialize() {
 void ModelCommon2::LightCommand(const LightGroup* lightGroup) {
 	// ライトコマンドを積む
 	if (lightGroup) {
-		lightGroup->Draw(commandList_, static_cast<UINT>(Effect::RoomParameter::kLight));
+		lightGroup->Draw(commandList_, static_cast<UINT>(Particle::RoomParameter::kLight));
 	} else {
-		defaultLightGroup_->Draw(commandList_, static_cast<UINT>(Effect::RoomParameter::kLight));
+		defaultLightGroup_->Draw(commandList_, static_cast<UINT>(Particle::RoomParameter::kLight));
 	}
 }
 
 void ModelCommon2::TransformCommand(const WorldTransform& worldTransform, const Camera& camera) {
 	// CBVをセット（ワールド行列）
-	commandList_->SetGraphicsRootConstantBufferView(static_cast<UINT>(Effect::RoomParameter::kWorldTransform), worldTransform.GetConstBuffer()->GetGPUVirtualAddress());
+	commandList_->SetGraphicsRootConstantBufferView(static_cast<UINT>(Particle::RoomParameter::kWorldTransform), worldTransform.GetConstBuffer()->GetGPUVirtualAddress());
 
 	// CBVをセット（カメラ）
-	commandList_->SetGraphicsRootConstantBufferView(static_cast<UINT>(Effect::RoomParameter::kCamera), camera.GetConstBuffer()->GetGPUVirtualAddress());
+	commandList_->SetGraphicsRootConstantBufferView(static_cast<UINT>(Particle::RoomParameter::kCamera), camera.GetConstBuffer()->GetGPUVirtualAddress());
 }
 
 void ModelCommon2::PreDraw(ID3D12GraphicsCommandList* commandList) {

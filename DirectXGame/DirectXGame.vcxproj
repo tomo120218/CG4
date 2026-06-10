@@ -163,7 +163,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Effect.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Model2.cpp" />
@@ -266,7 +266,7 @@
     <None Include="Resources\shaders\Sprite.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Effect.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="Model2.h" />
   </ItemGroup>

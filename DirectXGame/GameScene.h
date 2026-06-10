@@ -1,5 +1,5 @@
 #pragma once
-#include "Effect.h"
+#include "Particle.h"
 #include "KamataEngine.h"
 #include <list>
 #include <memory>
@@ -23,7 +23,7 @@ public:
 	void Draw();
 
 private:
-	KamataEngine::Effect* effect_ = nullptr;
+	KamataEngine::Particle* Particle_ = nullptr;
 	KamataEngine::WorldTransform worldTransform_;
 	KamataEngine::Camera camera_;
 

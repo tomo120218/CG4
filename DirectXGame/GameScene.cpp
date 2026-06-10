@@ -9,7 +9,7 @@ using namespace MathUtility;
 
 GameScene::~GameScene() {
 
-	Effect::StaticFinalize();
+	Particle::StaticFinalize();
 
 	stars_.clear();
 }
@@ -17,12 +17,12 @@ GameScene::~GameScene() {
 void GameScene::Initialize() {
 
 	srand((unsigned int)time(nullptr));
-	Effect::StaticInitialize();
+	Particle::StaticInitialize();
 
-	// effect_ = Effect::CreateSquare(1); // ←四角形 ()内の数字を増やすと個数が増え、四角形がぴったり並んで配置される
-	/*effect_ = Effect::CreateRing(8);*/
+	// Particle_ = Particle::CreateSquare(1); // ←四角形 ()内の数字を増やすと個数が増え、四角形がぴったり並んで配置される
+	/*Particle_ = Particle::CreateRing(8);*/
 
-	effect_ = Effect::CreateRhombus(10); // 菱形
+	Particle_ = Particle::CreateRhombus(10); // 菱形
 	worldTransform_.Initialize();
 
 	camera_.Initialize();
@@ -111,14 +111,14 @@ void GameScene::Draw() {
 	ID3D12GraphicsCommandList* cmdList = DirectXCommon::GetInstance()->GetCommandList();
 
 	// 描画開始
-	Effect::PreDraw(cmdList);
+	Particle::PreDraw(cmdList);
 
 	// モデル描画
-	/*effect_->Draw(worldTransform, camera_, textureHandle_);*/
+	/*Particle_->Draw(worldTransform, camera_, textureHandle_);*/
 	for (auto& star : stars_) {
-		effect_->Draw(star.worldTransform, camera_, textureHandle_, star.objectColor.get());
+		Particle_->Draw(star.worldTransform, camera_, textureHandle_, star.objectColor.get());
 	}
 
 	// 描画終了
-	Effect::PostDraw();
+	Particle::PostDraw();
 }
