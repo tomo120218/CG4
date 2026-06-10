@@ -275,20 +275,23 @@ Effect* Effect::CreateRhombus(int max) {
 		int vertexIndex = i * 4;
 		int indexIndex = i * 6;
 
-		// 横に並べるためのずらし量
-		float offsetX = static_cast<float>(i) * 3.0f;
-
 		// 菱形のサイズ
-		float width = 10.0f;
-		float height = 10.0f;
-
+		/*float width = 10.0f;*/
+		float baseWidth = 5.0f;
+		float height = 5.0f;
 		// 細さ
 		float thin = height * 0.05f;
 
-		// 角度 45度
-		float angle = -0.785398f;
+		// 長さをバラバラにする
+		float width = baseWidth * (0.5f + static_cast<float>(rand() % 100) / 100.0f);
+
+		// 星形にするための角度
+		float angle = (std::numbers::pi_v<float> * 2.0f / max) * i;
+
 		float c = std::cos(angle);
 		float s = std::sin(angle);
+
+		float offsetX = 0.0f;
 
 		// ローカル座標を回転させる関数
 		auto Rotate = [&](float x, float y) {
