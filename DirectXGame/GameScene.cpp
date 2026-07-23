@@ -1,124 +1,91 @@
 #include "GameScene.h"
-#include <cstdlib>
-#include <ctime>
-#include <numbers>
-#include <utility>
+#include <random>
 
 using namespace KamataEngine;
 using namespace MathUtility;
 
+std::random_device seedGenerator;
+std::mt19937 randomEngine(seedGenerator());
+std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
+
+// デストラクタ
 GameScene::~GameScene() {
+	// 3Dモデルデータの解放
+	delete modelParticle_;
 
-	Particle::StaticFinalize();
-
-	stars_.clear();
+	// パーティクルの解放
+	for (Particle* particle : particles_) {
+		delete particle;
+	}
+	particles_.clear();
 }
 
+// 初期化
 void GameScene::Initialize() {
+	// 乱数の初期化
+	srand((unsigned)time(NULL));
 
-	srand((unsigned int)time(nullptr));
-	Particle::StaticInitialize();
+	// 3Dモデルデータの生成
+	modelParticle_ = Model::CreateSphere(4, 4);
 
-	// Particle_ = Particle::CreateSquare(1); // ←四角形 ()内の数字を増やすと個数が増え、四角形がぴったり並んで配置される
-	/*Particle_ = Particle::CreateRing(8);*/
-
-	Particle_ = Particle::CreateRhombus(10); // 菱形
-	worldTransform_.Initialize();
-
+	// カメラの初期化
 	camera_.Initialize();
-
-	textureHandle_ = TextureManager::Load("uvChecker.png");
 }
 
-void GameScene::StarBorn(Vector3 position) {
-	/*stars_.emplace_back();
-
-	Star& star = stars_.back();
-
-	star.worldTransform.Initialize();
-
-	star.objectColor = std::make_unique<ObjectColor>();
-	star.objectColor->Initialize();
-
-	star.worldTransform.translation_ = position;
-
-	float scale = 0.3f + (float)(rand() % 100) / 100.0f;
-	star.worldTransform.scale_ = {scale, scale, 1.0f};
-
-	star.color = {1.0f, 1.0f, 1.0f, 1.0f};
-	star.objectColor->SetColor(star.color);
-
-	star.worldTransform.TransferMatrix();*/
-	stars_.emplace_back();
-
-	Star& star = stars_.back();
-
-	star.worldTransform.Initialize();
-
-	star.objectColor = std::make_unique<ObjectColor>();
-	star.objectColor->Initialize();
-
-	star.worldTransform.translation_ = position;
-
-	star.worldTransform.scale_ = {1.0f, 1.0f, 1.0f};
-
-	star.color = {1.0f, 1.0f, 1.0f, 1.0f};
-	star.objectColor->SetColor(star.color);
-
-	star.worldTransform.matWorld_ = MakeScaleMatrix(star.worldTransform.scale_) * MakeRotateZMatrix(star.worldTransform.rotation_.z) * MakeTranslateMatrix(star.worldTransform.translation_);
-
-	star.worldTransform.TransferMatrix();
-}
-
+// 更新
 void GameScene::Update() {
-
+	// 確率で発生
 	if (rand() % 20 == 0) {
-		Vector3 pos = {
-		    (float)(rand() % 100 - 50) / 10.0f, // -5.0 ～ 4.9
-		    (float)(rand() % 60 - 30) / 10.0f,  // -3.0 ～ 2.9
-		    0.0f};
-
-		StarBorn(pos);
+		// 発生位置は乱数
+		Vector3 position = {distribution(randomEngine) * 30.0f, distribution(randomEngine) * 20.0f, 0};
+		// パーティクルの生成
+		ParticleBorn(position);
+	}
+	// パーティクルの更新
+	for (Particle* particle : particles_) {
+		particle->Update();
 	}
 
-	for (auto& star : stars_) {
-		star.counter += 1.0f / 60.0f;
-
-		float alpha = 1.0f - star.counter / star.lifeTime;
-		if (alpha < 0.0f) {
-			alpha = 0.0f;
+	// 終了フラグの立ったパーティクルを削除
+	particles_.remove_if([](Particle* particle) {
+		if (particle->IsFinished() == true) {
+			delete particle;
+			return true;
 		}
-
-		star.color.w = alpha;
-		star.objectColor->SetColor(star.color);
-
-		if (star.counter >= star.lifeTime) {
-			star.isFinished = true;
-		}
-
-		star.worldTransform.matWorld_ = MakeScaleMatrix(star.worldTransform.scale_) * MakeRotateZMatrix(star.worldTransform.rotation_.z) * MakeTranslateMatrix(star.worldTransform.translation_);
-
-		star.worldTransform.TransferMatrix();
-	}
-
-	stars_.remove_if([](const Star& star) { return star.isFinished; });
-
-	worldTransform_.TransferMatrix();
-	camera_.TransferMatrix();
+		return false;
+	});
 }
 
+// 描画
 void GameScene::Draw() {
-	ID3D12GraphicsCommandList* cmdList = DirectXCommon::GetInstance()->GetCommandList();
+	// 3Dモデル描画前処理
+	Model::PreDraw();
 
-	// 描画開始
-	Particle::PreDraw(cmdList);
-
-	// モデル描画
-	/*Particle_->Draw(worldTransform, camera_, textureHandle_);*/
-	for (auto& star : stars_) {
-		Particle_->Draw(star.worldTransform, camera_, textureHandle_, star.objectColor.get());
+	// パーティクル描画
+	for (Particle* particle : particles_) {
+		particle->Draw(camera_);
 	}
 
-	// 描画終了
-	Particle::PostDraw();
+	// 3Dモデル描画後処理
+	Model::PostDraw();
+}
+
+// パーティクルの発生
+void GameScene::ParticleBorn(Vector3 position) {
+	// パーティクルの生成
+	for (int i = 0; i < 150; i++) {
+		// 生成
+		Particle* particle = new Particle();
+		// 位置
+		// Vector3 position = { 0.0, 0.0f, 0.0f };
+		// 移動量
+		Vector3 velocity = {distribution(randomEngine), distribution(randomEngine), 0};
+		Normalize(velocity);
+		velocity *= distribution(randomEngine);
+		velocity *= 0.1f;
+		// 初期化
+		particle->Initialize(modelParticle_, position, velocity);
+		// リストに追加
+		particles_.push_back(particle);
+	}
 }

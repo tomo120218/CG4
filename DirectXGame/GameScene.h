@@ -1,44 +1,45 @@
 #pragma once
-#include "Particle.h"
+
 #include "KamataEngine.h"
-#include <list>
-#include <memory>
+#include "Particle.h"
 
 // ゲームシーン
 class GameScene {
 public:
-	// デストラクタ
-	/*GameScene();*/
+	/// <summary>
+	/// デストラクタ
+	/// </summary>
 	~GameScene();
 
-	// 初期化
+	/// <summary>
+	/// 初期化
+	/// </summary>
 	void Initialize();
 
-	void StarBorn(KamataEngine::Vector3 position);
-
-	// 更新
+	/// <summary>
+	/// 更新
+	/// </summary>
 	void Update();
 
-	// 描画
+	/// <summary>
+	/// 描画
+	/// </summary>
 	void Draw();
 
 private:
-	KamataEngine::Particle* Particle_ = nullptr;
-	KamataEngine::WorldTransform worldTransform_;
+	// パーティクル3Dモデルデータ
+	KamataEngine::Model* modelParticle_ = nullptr;
+
+	// カメラ
 	KamataEngine::Camera camera_;
 
-	uint32_t textureHandle_ = 0;
+	// パーティクル
+	Particle* particle_ = nullptr;
+	std::list<Particle*> particles_;
 
-	struct Star {
-		KamataEngine::WorldTransform worldTransform;
-		std::unique_ptr<KamataEngine::ObjectColor> objectColor;
-
-		float counter = 0.0f;
-		float lifeTime = 1.0f;
-		bool isFinished = false;
-
-		KamataEngine::Vector4 color = {1, 1, 1, 1};
-	};
-
-	std::list<Star> stars_;
+	/// <summary>
+	/// パーティクル発生
+	/// </summary>
+	/// <param name="position">位置</param>
+	void ParticleBorn(Vector3 position);
 };
