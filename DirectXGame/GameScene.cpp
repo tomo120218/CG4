@@ -1,91 +1,84 @@
 #include "GameScene.h"
-#include <random>
 
 using namespace KamataEngine;
-using namespace MathUtility;
-
-std::random_device seedGenerator;
-std::mt19937 randomEngine(seedGenerator());
-std::uniform_real_distribution<float> distribution(-1.0f, 1.0f);
 
 // デストラクタ
 GameScene::~GameScene() {
-	// 3Dモデルデータの解放
-	delete modelParticle_;
+	delete stage_;
+	delete player_;
+	delete graphBar_;
+	delete drawNumber_;
 
-	// パーティクルの解放
-	for (Particle* particle : particles_) {
-		delete particle;
-	}
-	particles_.clear();
+	delete modelPlayer_;
 }
 
 // 初期化
 void GameScene::Initialize() {
-	// 乱数の初期化
-	srand((unsigned)time(NULL));
-
-	// 3Dモデルデータの生成
-	modelParticle_ = Model::CreateSphere(4, 4);
+	// ファイル名を指定してテクスチャを読み込む
+	textureHandleStage_ = TextureManager::Load("stage.png");
+	textureHandleGraph_ = TextureManager::Load("white1x1.png");
+	textureHandleNumber_ = TextureManager::Load("number.png");
+	// 3Dモデルの生成
+	modelPlayer_ = Model::CreateFromOBJ("player");
 
 	// カメラの初期化
+	camera_.translation_ = {0, 0, -20};
 	camera_.Initialize();
+
+	stage_ = new Stage();
+	stage_->Initialize(textureHandleStage_);
+	player_ = new Player();
+	player_->Initialize(modelPlayer_);
+	graphBar_ = new GraphBar();
+	graphBar_->Initialize(textureHandleGraph_);
+	drawNumber_ = new DrawNumber();
+	drawNumber_->Initialize(textureHandleNumber_);
 }
 
 // 更新
 void GameScene::Update() {
-	// 確率で発生
-	if (rand() % 20 == 0) {
-		// 発生位置は乱数
-		Vector3 position = {distribution(randomEngine) * 30.0f, distribution(randomEngine) * 20.0f, 0};
-		// パーティクルの生成
-		ParticleBorn(position);
+	hp_--;
+	if (hp_ < 0) {
+		hp_ = 200u;
 	}
-	// パーティクルの更新
-	for (Particle* particle : particles_) {
-		particle->Update();
-	}
+	gameScore_++;
 
-	// 終了フラグの立ったパーティクルを削除
-	particles_.remove_if([](Particle* particle) {
-		if (particle->IsFinished() == true) {
-			delete particle;
-			return true;
-		}
-		return false;
-	});
+	stage_->Update();
+	player_->Update();
+	graphBar_->Update(hp_);
+	drawNumber_->Update(gameScore_);
 }
 
 // 描画
 void GameScene::Draw() {
+	// DirectXCommonインスタンスの取得
+	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
+
+	// スプライト描画前処理
+	Sprite::PreDraw(dxCommon->GetCommandList());
+
+	stage_->Draw();
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
+
+	// 深度バッファクリア
+	dxCommon->ClearDepthBuffer();
 	// 3Dモデル描画前処理
 	Model::PreDraw();
 
-	// パーティクル描画
-	for (Particle* particle : particles_) {
-		particle->Draw(camera_);
-	}
+	// ここに3Dモデルインスタンスの描画処理を記述する
+	player_->Draw(camera_);
 
 	// 3Dモデル描画後処理
 	Model::PostDraw();
-}
 
-// パーティクルの発生
-void GameScene::ParticleBorn(Vector3 position) {
-	// パーティクルの生成
-	for (int i = 0; i < 150; i++) {
-		// 生成
-		Particle* particle = new Particle();
-		// 位置
-		// Vector3 position = { 0.0, 0.0f, 0.0f };
-		// 移動量
-		Vector3 velocity = {distribution(randomEngine), distribution(randomEngine), 0};
-		Normalize(velocity);
-		velocity *= distribution(randomEngine);
-		velocity *= 0.1f;
-		// 初期化
-		particle->Initialize(modelParticle_, position, velocity);
-		// リストに追加
-		particles_.push_back(particle);
-	}
+	// スプライト描画前処理
+	Sprite::PreDraw(dxCommon->GetCommandList());
+
+	graphBar_->Draw();
+	drawNumber_->Draw();
+
+	// スプライト描画後処理
+	Sprite::PostDraw();
 }
