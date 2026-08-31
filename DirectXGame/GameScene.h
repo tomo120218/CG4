@@ -3,43 +3,34 @@
 #include "KamataEngine.h"
 #include "Particle.h"
 
+#include <list>
+
 // ゲームシーン
 class GameScene {
+
 public:
-	/// <summary>
-	/// デストラクタ
-	/// </summary>
+	// デストラクタ
 	~GameScene();
 
-	/// <summary>
-	/// 初期化
-	/// </summary>
+	// 初期化
 	void Initialize();
 
-	/// <summary>
-	/// 更新
-	/// </summary>
+	// 更新
 	void Update();
 
-	/// <summary>
-	/// 描画
-	/// </summary>
+	// 描画
 	void Draw();
 
 private:
-	// パーティクル3Dモデルデータ
+	// パーティクル3Dモデル
 	KamataEngine::Model* modelParticle_ = nullptr;
 
 	// カメラ
 	KamataEngine::Camera camera_;
 
-	// パーティクル
-	Particle* particle_ = nullptr;
+	// 流星パーティクル
 	std::list<Particle*> particles_;
 
-	/// <summary>
-	/// パーティクル発生
-	/// </summary>
-	/// <param name="position">位置</param>
-	void ParticleBorn(Vector3 position);
+	// 流星を生成
+	void ParticleBorn();
 };

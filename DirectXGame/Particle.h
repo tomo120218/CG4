@@ -8,43 +8,55 @@ using namespace KamataEngine;
 class Particle {
 
 public:
-	/// <summary>
-	/// 初期化
-	/// </summary>
-	/// <param name="model">モデル</param>
-	/// <param name="position">位置</param>
-	/// <param name="velocity">移動量</param>
+	// 流星の初期化
 	void Initialize(KamataEngine::Model* model, KamataEngine::Vector3 position, KamataEngine::Vector3 velocity);
 
-	/// <summary>
-	/// 更新
-	/// </summary>
+	// 更新
 	void Update();
 
-	/// <summary>
-	/// 描画
-	/// </summary>
-	/// <param name="camera">カメラ</param>
+	// 描画
 	void Draw(KamataEngine::Camera& camera);
 
-	// デスフラグのgetter
+	// 終了フラグ
 	bool IsFinished() { return isFinished_; }
 
 private:
-	// ワールド変換データ
+	// 流星本体のワールド変換
 	KamataEngine::WorldTransform worldTransform_;
+
+	// 軌跡のワールド変換
+	KamataEngine::WorldTransform trailWorldTransforms_[12];
+
 	// モデル
 	KamataEngine::Model* model_ = nullptr;
-	// 色変更オブジェクト
+
+	// 本体の色
 	KamataEngine::ObjectColor objectColor_;
-	// 色の数値
-	KamataEngine::Vector4 color_;
+
+	// 軌跡の色
+	KamataEngine::ObjectColor trailObjectColors_[12];
+
+	// 本体の色
+	KamataEngine::Vector4 color_{};
+
+	// 軌跡の色
+	KamataEngine::Vector4 trailColors_[12]{};
+
 	// 移動量
-	KamataEngine::Vector3 velocity_;
+	KamataEngine::Vector3 velocity_{};
+
+	// 過去の位置
+	KamataEngine::Vector3 oldPositions_[12]{};
+
 	// 終了フラグ
 	bool isFinished_ = false;
-	// 経過時間カウント
+
+	// 経過時間
 	float counter_ = 0.0f;
-	// 存続時間（消滅までの時間）<秒>
-	const float kDuration = 1.0f;
+
+	// 寿命
+	const float kDuration = 1.5f;
+
+	// 軌跡の数
+	static const int kTrailCount = 12;
 };
