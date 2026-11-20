@@ -53,6 +53,7 @@ void Particle::Initialize(Model* model, Vector3 position, Vector3 velocity) {
 			scale = 0.04f;
 		}
 
+
 		trailWorldTransforms_[i].translation_ = oldPositions_[i];
 
 		trailWorldTransforms_[i].scale_ = {scale, scale, scale};
