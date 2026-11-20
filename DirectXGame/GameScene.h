@@ -5,6 +5,7 @@
 
 #include <list>
 
+
 // ゲームシーン
 class GameScene {
 

@@ -27,7 +27,8 @@ void GameScene::Initialize() {
 	srand((unsigned)time(NULL));
 
 	// 球モデル
-	modelParticle_ = Model::CreateSphere(4, 4);
+	/*modelParticle_ = Model::CreateSphere(4, 4);*/
+	modelParticle_ = Model::CreateFromOBJ("goal", true);
 
 	// カメラ
 	camera_.Initialize();
