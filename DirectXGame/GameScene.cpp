@@ -40,8 +40,7 @@ void GameScene::Initialize() {
 	modelPlayer_ = Model::CreateFromOBJ("player");
 
 	// 流星用モデル
-	modelParticle_ = Model::CreateSphere(4, 4);
-
+	modelParticle_ = Model::CreateFromOBJ("goal", true);
 	// カメラ初期化
 	camera_.translation_ = {0, 0, -20};
 	camera_.Initialize();
@@ -173,8 +172,7 @@ void GameScene::ParticleBorn() {
 
 	Vector3 position = {x, y, 0.0f};
 
-	// 移動速度
-	float speed = 1.0f + static_cast<float>(rand() % 40) / 100.0f;
+	float speed = 0.5f + static_cast<float>(rand() % 30) / 100.0f;
 
 	Vector3 velocity = {-0.75f * speed, -0.55f * speed, 0.0f};
 

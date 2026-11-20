@@ -23,7 +23,7 @@ void Particle::Initialize(Model* model, Vector3 position, Vector3 velocity) {
 
 	// 最初の大きさ
 	/*worldTransform_.scale_ = {0.35f, 0.35f, 0.35f};*/
-	worldTransform_.scale_ = {3.0f, 3.0f, 3.0f};
+	worldTransform_.scale_ = {1.5f, 1.5f, 1.5f};
 
 	// 移動方向を向く
 	worldTransform_.rotation_.z = std::atan2f(velocity_.y, velocity_.x);
@@ -109,7 +109,7 @@ void Particle::Update() {
 
 	float scale = 0.35f + t * 0.9f;
 
-	worldTransform_.scale_ = {scale * 1.5f, scale * 0.7f, scale * 0.7f};
+	worldTransform_.scale_ = {scale * 0.75f, scale * 0.35f, scale * 0.35f	};
 
 	// ========================================
 	// 移動方向を向く
